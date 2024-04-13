@@ -1,0 +1,36 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract MyToken {
+    string public constant name = "NuTakoe"; // Наименование токена
+    string public constant symbol = "Takoe"; // Символ токена
+    uint8 public constant decimals = 18; // Количество десятичных знаков
+
+    uint256 public maxSupply = 1000000 * (10 ** uint256(decimals)); // Максимальное количество токенов
+    uint256 public totalSupply; // Общее количество выпущенных токенов
+
+    mapping(address => uint256) balances;
+
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    function mint(address to, uint256 amount) external onlyOwner {
+        require(totalSupply + amount <= 1000000 * (10 ** uint256(decimals)), "Exceeds mint limit");
+        require(totalSupply + amount <= maxSupply, "Exceeds maximum supply");
+        balances[to] += amount;
+        totalSupply += amount;
+        maxSupply -= amount;
+    }
+
+    function balanceOf(address account) public view returns (uint256) {
+        return balances[account];
+    }
+}
